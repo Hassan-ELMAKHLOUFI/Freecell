@@ -94,12 +94,14 @@ Zone * initialiser(){
     int r,indice =52,tmp;
       int T[52];
     Zone *zone1;
+    Zone *zone ;
+    zone=(Zone*)malloc(sizeof(Zone)*3);
     Carte *c;
-    zone1=(Zone*)malloc(sizeof(Zone));
-    zone1->Pile=(ElementColonne**)malloc(sizeof(ElementColonne)*8);
+    
+    zone[0].Pile=(ElementColonne**)malloc(sizeof(ElementColonne)*8);
     
     for(int i=0;i<8;i++){
-        zone1->Pile[i]=NULL;
+        zone[0].Pile[i]=NULL;
     }
   
     for (int i=0;i<52;i++){
@@ -121,7 +123,7 @@ Zone * initialiser(){
        
         c=numToCarte(tmp);
                 
-                PUSH(c,&zone1->Pile[0]);
+                PUSH(c,&zone[0].Pile[0]);
             }
     
 
@@ -140,7 +142,7 @@ Zone * initialiser(){
        
         c=numToCarte(tmp);
                 
-                PUSH(c,&zone1->Pile[1]);
+                PUSH(c,&zone[0].Pile[1]);
             }
         
        
@@ -158,7 +160,7 @@ Zone * initialiser(){
        
         c=numToCarte(tmp);
                 
-                PUSH(c,&zone1->Pile[2]);
+                PUSH(c,&zone[0].Pile[2]);
             }
         
     
@@ -178,7 +180,7 @@ Zone * initialiser(){
        
         c=numToCarte(tmp);
                 
-                PUSH(c,&zone1->Pile[3]);
+                PUSH(c,&zone[0].Pile[3]);
             }
     
     
@@ -197,7 +199,7 @@ Zone * initialiser(){
        
         c=numToCarte(tmp);
                 
-                PUSH(c,&zone1->Pile[4]);
+                PUSH(c,&zone[0].Pile[4]);
             }
     
     
@@ -215,7 +217,7 @@ Zone * initialiser(){
        
         c=numToCarte(tmp);
                 
-                PUSH(c,&zone1->Pile[5]);
+                PUSH(c,&zone[0].Pile[5]);
             }
     
     
@@ -233,7 +235,7 @@ Zone * initialiser(){
        
         c=numToCarte(tmp);
                 
-                PUSH(c,&zone1->Pile[6]);
+                PUSH(c,&zone[0].Pile[6]);
             }
         
         
@@ -252,37 +254,132 @@ Zone * initialiser(){
 
         c=numToCarte(tmp);
 
-                PUSH(c,&zone1->Pile[7]);
+                PUSH(c,&zone[0].Pile[7]);
             }
 
-    return zone1;
+    return zone;
 }
 
 
 void afficheCol(ElementColonne *col){
     
-    while (col!=NULL){
-        printf("%d\t",PEEK(col)->numero);
-        printf("%s\t",PEEK(col)->coleur);
-        printf("%s\t",PEEK(col)->type);
-        POP(&col);
+//    while (col!=NULL){
+//        printf("%d\t",PEEK(col)->numero);
+//        printf("%s\t",PEEK(col)->coleur);
+//        printf("%s\t",PEEK(col)->type);
+//        POP(&col);
+//        printf("\n");
+//    }
+    
+    for (ElementColonne * e=col;e!=NULL;e=e->next){
+        printf("%d\t",e->c->numero);
+        printf("%s\t",e->c->coleur);
+        printf("%s\t",e->c->type);
         printf("\n");
     }
 }
 
 
+
+
+void deplace (Zone *z,int   zSource, int  zDestination ,int colSource, int colDestination  ){
+    
+    Zone zSrc, zDes;
+    Carte *carteSrc,*carteDes;
+    
+    for (int i=0;i<3;i++){
+        if (zSource==i){
+            zSrc=z[i];
+          }
+      }
+    
+    for (int i=0;i<3;i++){
+        if (zDestination==i){
+            zDes=z[i];
+          }
+      }
+    
+    carteSrc= PEEK(zSrc.Pile[colSource]);
+    carteDes=PEEK(zDes.Pile[colDestination]);
+    
+    if (zDestination==0){
+
+            
+            if(carteDes->numero==carteSrc->numero+1 && strcmp(carteSrc->coleur, carteDes->coleur)!=0){
+                POP(&zSrc.Pile[colSource]);
+                PUSH(carteSrc,&zDes.Pile[colDestination]);
+                printf("\n bine deplacer \n");
+            }else{
+                printf("\n vous nous pouvez pas deplacer \n");
+            }
+    }
+    
+    if(zDestination==2){
+            
+        if(carteDes->numero+1==carteSrc->numero && strcmp(carteSrc->type, carteDes->type)!=0){
+             POP(&zSrc.Pile[colSource]);
+             PUSH(carteSrc,&zDes.Pile[colDestination]);
+         }
+    }
+    
+    if(zDestination==1){
+            
+        if(!carteDes){
+            
+             PUSH(carteSrc,&zDes.Pile[colDestination]);
+         }
+    }
+    
+    
+    
+    
+    
+    
+
+}
+
 void afficheZone (Zone *zone){
     
-    
     for (int i=0;i<8;i++){
-        afficheCol(zone->Pile[i]);
+        printf("\n********************\n");
+        afficheCol(zone[0].Pile[i]);
         
         
     }
 }
+
+
+
 int main() {
 
     Zone *z;
+    int   zSource, zDestination ,colSource, colDestination;
+
+    int test;
+    
     z=initialiser();
     afficheZone(z);
+    
+    do{
+        
+        printf("\n Donnez le numero de la zone Source  \n ");
+        scanf("%d",&zSource);
+        
+        printf("\n Donnez le numero de la colonne Source  \n ");
+        scanf("%d",&colSource);
+        
+        printf("\n Donnez le numero de la zone Destination  \n ");
+        scanf("%d",&zDestination);
+        
+
+        printf("\n Donnez le numero de la colonne Destination \n ");
+        scanf("%d",&colDestination);
+        deplace (z,zSource,zDestination ,colSource,colDestination);
+         afficheZone(z);
+        printf ("taper 0 pour quitter \n ");
+        printf ("taper 1 pour continuer\n");
+        scanf("%d",&test);
+        
+        
+    }while(test);
 }
